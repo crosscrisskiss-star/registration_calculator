@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="登録料計算" />
+  <title>登録料計算機</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kaku Gothic ProN", sans-serif;
+      background: #f2f2f7;
+      color: #1c1c1e;
+      min-height: 100vh;
+      padding: env(safe-area-inset-top, 20px) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
+    }
+
+    .header {
+      background: #fff;
+      border-bottom: 0.5px solid rgba(0,0,0,0.12);
+      padding: 16px 20px 12px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .header h1 {
+      font-size: 17px;
+      font-weight: 600;
+      text-align: center;
+      letter-spacing: 0.01em;
+    }
+
+    .content {
+      padding: 20px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 18px 16px;
+    }
+
+    .card-label {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1c1c1e;
+      margin-bottom: 2px;
+    }
+
+    .card-price {
+      font-size: 13px;
+      color: #8e8e93;
+      margin-bottom: 14px;
+    }
+
+    .counter {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-counter {
+      width: 44px;
+      height: 44px;
+      border-radius: 22px;
+      border: none;
+      background: #f2f2f7;
+      color: #1c1c1e;
+      font-size: 22px;
+      line-height: 1;
+      cursor: pointer;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.1s;
+    }
+
+    .btn-counter:active {
+      background: #d1d1d6;
+    }
+
+    .counter input {
+      flex: 1;
+      text-align: center;
+      font-size: 26px;
+      font-weight: 600;
+      border: none;
+      background: transparent;
+      color: #1c1c1e;
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+    }
+
+    .result-card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 18px 16px;
+    }
+
+    .result-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+    }
+
+    .result-row-label {
+      font-size: 14px;
+      color: #8e8e93;
+    }
+
+    .result-row-value {
+      font-size: 15px;
+      font-weight: 500;
+      color: #1c1c1e;
+    }
+
+    .divider {
+      height: 0.5px;
+      background: rgba(0,0,0,0.1);
+      margin: 8px 0;
+    }
+
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding-top: 4px;
+    }
+
+    .total-label {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .total-value {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: #1c1c1e;
+    }
+
+    .btn-reset {
+      width: 100%;
+      height: 44px;
+      border-radius: 14px;
+      border: none;
+      background: #fff;
+      color: #ff3b30;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      font-family: inherit;
+      transition: background 0.1s;
+    }
+
+    .btn-reset:active {
+      background: #f2f2f7;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body { background: #000; color: #fff; }
+      .header { background: #1c1c1e; border-bottom-color: rgba(255,255,255,0.1); }
+      .card, .result-card, .btn-reset { background: #1c1c1e; }
+      .card-label, .total-label, .total-value, .result-row-value, .counter input { color: #fff; }
+      .btn-counter { background: #2c2c2e; color: #fff; }
+      .btn-counter:active { background: #3a3a3c; }
+      .divider { background: rgba(255,255,255,0.1); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>登録料計算機</h1>
+  </div>
+
+  <div class="content">
+
+    <div class="card">
+      <p class="card-label">繁殖登録</p>
+      <p class="card-price">17,100円 / 件</p>
+      <div class="counter">
+        <button class="btn-counter" onclick="change('hanbyo', -1)">−</button>
+        <input type="number" id="hanbyo" value="0" min="0" inputmode="numeric" oninput="calc()" />
+        <button class="btn-counter" onclick="change('hanbyo', 1)">＋</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="card-label">血統登録</p>
+      <p class="card-price">18,800円 / 件</p>
+      <div class="counter">
+        <button class="btn-counter" onclick="change('ketto', -1)">−</button>
+        <input type="number" id="ketto" value="0" min="0" inputmode="numeric" oninput="calc()" />
+        <button class="btn-counter" onclick="change('ketto', 1)">＋</button>
+      </div>
+    </div>
+
+    <div class="result-card">
+      <div class="result-row">
+        <span class="result-row-label">繁殖登録 小計</span>
+        <span class="result-row-value" id="sub-hanbyo">0円</span>
+      </div>
+      <div class="result-row">
+        <span class="result-row-label">血統登録 小計</span>
+        <span class="result-row-value" id="sub-ketto">0円</span>
+      </div>
+      <div class="divider"></div>
+      <div class="total-row">
+        <span class="total-label">合計</span>
+        <span class="total-value" id="total">0円</span>
+      </div>
+    </div>
+
+    <button class="btn-reset" onclick="reset()">リセット</button>
+
+  </div>
+
+  <script>
+    function fmt(n) {
+      return n.toLocaleString('ja-JP') + '円';
+    }
+    function calc() {
+      var h = Math.max(0, parseInt(document.getElementById('hanbyo').value) || 0);
+      var k = Math.max(0, parseInt(document.getElementById('ketto').value) || 0);
+      document.getElementById('sub-hanbyo').textContent = fmt(h * 17100);
+      document.getElementById('sub-ketto').textContent = fmt(k * 18800);
+      document.getElementById('total').textContent = fmt(h * 17100 + k * 18800);
+    }
+    function change(id, delta) {
+      var el = document.getElementById(id);
+      el.value = Math.max(0, (parseInt(el.value) || 0) + delta);
+      calc();
+    }
+    function reset() {
+      document.getElementById('hanbyo').value = 0;
+      document.getElementById('ketto').value = 0;
+      calc();
+    }
+  </script>
+
+</body>
+</html>
