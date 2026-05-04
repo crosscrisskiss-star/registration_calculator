@@ -183,7 +183,7 @@
       <p class="card-price">18,800円 / 件</p>
       <div class="counter">
         <button class="btn-counter" onclick="change('ketto', -1)">−</button>
-        <input type="number" id="ketto" value="0" min="0" inputmode="numeric" oninput="calc()" />
+        <input type="number" id="ketto" value="" min="0" inputmode="numeric" oninput="calc()" />
         <button class="btn-counter" onclick="change('ketto', 1)">＋</button>
       </div>
     </div>
@@ -193,7 +193,7 @@
       <p class="card-price">17,100円 / 件</p>
       <div class="counter">
         <button class="btn-counter" onclick="change('hanbyo', -1)">−</button>
-        <input type="number" id="hanbyo" value="0" min="0" inputmode="numeric" oninput="calc()" />
+        <input type="number" id="hanbyo" value="" min="0" inputmode="numeric" oninput="calc()" />
         <button class="btn-counter" onclick="change('hanbyo', 1)">＋</button>
       </div>
     </div>
@@ -233,8 +233,8 @@
       calc();
     }
     function reset() {
-      document.getElementById('hanbyo').value = 0;
-      document.getElementById('ketto').value = 0;
+      document.getElementById('hanbyo').value = '';
+      document.getElementById('ketto').value = '';
       calc();
     }
   </script>
