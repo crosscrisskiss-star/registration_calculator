@@ -9,7 +9,6 @@
   <title>登録料計算機</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kaku Gothic ProN", sans-serif;
       background: #f2f2f7;
@@ -17,7 +16,6 @@
       min-height: 100vh;
       padding: env(safe-area-inset-top, 20px) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
     }
-
     .header {
       background: #fff;
       border-bottom: 0.5px solid rgba(0,0,0,0.12);
@@ -26,13 +24,7 @@
       top: 0;
       z-index: 10;
     }
-
-    .header h1 {
-      font-size: 17px;
-      font-weight: 600;
-      text-align: center;
-    }
-
+    .header h1 { font-size: 17px; font-weight: 600; text-align: center; }
     .content {
       padding: 20px 16px;
       display: flex;
@@ -41,32 +33,14 @@
       max-width: 480px;
       margin: 0 auto;
     }
-
-    .card {
-      background: #fff;
-      border-radius: 14px;
-      padding: 16px;
-    }
-
-    .card-label {
-      font-size: 15px;
-      font-weight: 600;
-      color: #1c1c1e;
-      margin-bottom: 2px;
-    }
-
-    .card-price {
-      font-size: 13px;
-      color: #8e8e93;
-      margin-bottom: 12px;
-    }
-
+    .card { background: #fff; border-radius: 14px; padding: 16px; }
+    .card-label { font-size: 15px; font-weight: 600; color: #1c1c1e; margin-bottom: 2px; }
+    .card-price { font-size: 13px; color: #8e8e93; margin-bottom: 12px; }
     .counter {
       display: grid;
       grid-template-columns: 44px 1fr 44px;
       align-items: center;
     }
-
     .btn-counter {
       width: 44px;
       height: 44px;
@@ -80,11 +54,9 @@
       align-items: center;
       justify-content: center;
       -webkit-tap-highlight-color: transparent;
-      transition: background 0.1s;
+      touch-action: manipulation;
     }
-
     .btn-counter:active { background: #d1d1d6; }
-
     .counter input {
       width: 100%;
       min-width: 0;
@@ -98,50 +70,16 @@
       -webkit-appearance: none;
       appearance: none;
     }
-
     input[type=number]::-webkit-inner-spin-button,
-    input[type=number]::-webkit-outer-spin-button {
-      -webkit-appearance: none;
-    }
-
-    .result-card {
-      background: #fff;
-      border-radius: 14px;
-      padding: 16px;
-    }
-
-    .result-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 6px 0;
-    }
-
+    input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
+    .result-card { background: #fff; border-radius: 14px; padding: 16px; }
+    .result-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; }
     .result-row-label { font-size: 14px; color: #8e8e93; }
     .result-row-value { font-size: 15px; font-weight: 500; color: #1c1c1e; }
-
-    .divider {
-      height: 0.5px;
-      background: rgba(0,0,0,0.1);
-      margin: 8px 0;
-    }
-
-    .total-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      padding-top: 4px;
-    }
-
+    .divider { height: 0.5px; background: rgba(0,0,0,0.1); margin: 8px 0; }
+    .total-row { display: flex; justify-content: space-between; align-items: baseline; padding-top: 4px; }
     .total-label { font-size: 16px; font-weight: 600; }
-
-    .total-value {
-      font-size: 32px;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-      color: #1c1c1e;
-    }
-
+    .total-value { font-size: 32px; font-weight: 700; letter-spacing: -0.5px; color: #1c1c1e; }
     .btn-reset {
       width: 100%;
       height: 44px;
@@ -153,12 +91,39 @@
       font-weight: 500;
       cursor: pointer;
       -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
       font-family: inherit;
-      transition: background 0.1s;
     }
-
     .btn-reset:active { background: #f2f2f7; }
-
+    .section-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #8e8e93;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 4px 4px 0;
+    }
+    .combo-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 0.5px solid rgba(0,0,0,0.08);
+    }
+    .combo-row:last-child { border-bottom: none; }
+    .combo-label { font-size: 14px; color: #1c1c1e; }
+    .no-result { font-size: 14px; color: #8e8e93; text-align: center; padding: 8px 0; }
+    .clear-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #8e8e93;
+      font-size: 20px;
+      padding: 0 4px;
+      line-height: 1;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
     @media (prefers-color-scheme: dark) {
       body { background: #000; color: #fff; }
       .header { background: #1c1c1e; border-bottom-color: rgba(255,255,255,0.1); }
@@ -167,6 +132,9 @@
       .btn-counter { background: #2c2c2e; color: #fff; }
       .btn-counter:active { background: #3a3a3c; }
       .divider { background: rgba(255,255,255,0.1); }
+      .combo-label { color: #fff; }
+      .combo-row { border-bottom-color: rgba(255,255,255,0.08); }
+      #total-input { color: #fff; border-bottom-color: #3a3a3c; }
     }
   </style>
 </head>
@@ -182,9 +150,9 @@
       <p class="card-label">血統登録</p>
       <p class="card-price">18,800円 / 件</p>
       <div class="counter">
-        <button class="btn-counter" onclick="change('ketto', -1)">−</button>
-        <input type="number" id="ketto" value="" min="0" inputmode="numeric" oninput="calc()" />
-        <button class="btn-counter" onclick="change('ketto', 1)">＋</button>
+        <button class="btn-counter" id="btn-ketto-minus">−</button>
+        <input type="number" id="ketto" value="" min="0" inputmode="numeric" />
+        <button class="btn-counter" id="btn-ketto-plus">＋</button>
       </div>
     </div>
 
@@ -192,9 +160,9 @@
       <p class="card-label">繁殖登録</p>
       <p class="card-price">17,100円 / 件</p>
       <div class="counter">
-        <button class="btn-counter" onclick="change('hanbyo', -1)">−</button>
-        <input type="number" id="hanbyo" value="" min="0" inputmode="numeric" oninput="calc()" />
-        <button class="btn-counter" onclick="change('hanbyo', 1)">＋</button>
+        <button class="btn-counter" id="btn-hanbyo-minus">−</button>
+        <input type="number" id="hanbyo" value="" min="0" inputmode="numeric" />
+        <button class="btn-counter" id="btn-hanbyo-plus">＋</button>
       </div>
     </div>
 
@@ -214,12 +182,30 @@
       </div>
     </div>
 
-    <button class="btn-reset" onclick="reset()">リセット</button>
+    <button class="btn-reset" id="btn-reset">リセット</button>
+
+    <div class="section-title">合計金額から頭数を逆算</div>
+
+    <div class="card">
+      <p class="card-label">合計金額を入力</p>
+      <div style="display:flex; align-items:center; gap:8px; margin-top:12px;">
+        <input type="number" id="total-input" inputmode="numeric"
+          style="flex:1; min-width:0; font-size:22px; font-weight:600; border:none; border-bottom:1.5px solid #d1d1d6; background:transparent; color:#1c1c1e; outline:none; padding-bottom:4px; -webkit-appearance:none; appearance:none;" />
+        <span style="font-size:16px; color:#8e8e93; flex-shrink:0;">円</span>
+        <button class="clear-btn" id="btn-clear-reverse">×</button>
+      </div>
+    </div>
+
+    <div class="result-card" id="reverse-result" style="display:none;">
+      <p class="card-label" style="margin-bottom:12px;">頭数の組み合わせ</p>
+      <div id="reverse-list"></div>
+    </div>
 
   </div>
 
   <script>
     function fmt(n) { return n.toLocaleString('ja-JP') + '円'; }
+
     function calc() {
       var h = Math.max(0, parseInt(document.getElementById('hanbyo').value) || 0);
       var k = Math.max(0, parseInt(document.getElementById('ketto').value) || 0);
@@ -227,16 +213,59 @@
       document.getElementById('sub-ketto').textContent = fmt(k * 18800);
       document.getElementById('total').textContent = fmt(h * 17100 + k * 18800);
     }
-    function change(id, delta) {
+
+    function changeVal(id, delta) {
       var el = document.getElementById(id);
       el.value = Math.max(0, (parseInt(el.value) || 0) + delta);
       calc();
     }
-    function reset() {
-      document.getElementById('hanbyo').value = '';
-      document.getElementById('ketto').value = '';
-      calc();
+
+    function calcReverse() {
+      var total = parseInt(document.getElementById('total-input').value) || 0;
+      var resultDiv = document.getElementById('reverse-result');
+      var listDiv = document.getElementById('reverse-list');
+      if (total <= 0) { resultDiv.style.display = 'none'; return; }
+      var results = [];
+      var maxK = Math.floor(total / 18800);
+      for (var k = 0; k <= maxK; k++) {
+        var remain = total - k * 18800;
+        if (remain >= 0 && remain % 17100 === 0) {
+          results.push({ k: k, h: remain / 17100 });
+        }
+      }
+      resultDiv.style.display = 'block';
+      if (results.length === 0) {
+        listDiv.innerHTML = '<p class="no-result">該当なし</p>';
+        return;
+      }
+      listDiv.innerHTML = results.map(function(r) {
+        var parts = [];
+        if (r.k > 0) parts.push('血統登録 ' + r.k + '頭');
+        if (r.h > 0) parts.push('繁殖登録 ' + r.h + '頭');
+        if (parts.length === 0) parts.push('0頭');
+        return '<div class="combo-row"><span class="combo-label">' + parts.join('　＋　') + '</span></div>';
+      }).join('');
     }
+
+    // イベント登録（onclickではなくaddEventListenerを使用）
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('btn-ketto-minus').addEventListener('click', function() { changeVal('ketto', -1); });
+      document.getElementById('btn-ketto-plus').addEventListener('click', function() { changeVal('ketto', 1); });
+      document.getElementById('btn-hanbyo-minus').addEventListener('click', function() { changeVal('hanbyo', -1); });
+      document.getElementById('btn-hanbyo-plus').addEventListener('click', function() { changeVal('hanbyo', 1); });
+      document.getElementById('btn-reset').addEventListener('click', function() {
+        document.getElementById('hanbyo').value = '';
+        document.getElementById('ketto').value = '';
+        calc();
+      });
+      document.getElementById('btn-clear-reverse').addEventListener('click', function() {
+        document.getElementById('total-input').value = '';
+        document.getElementById('reverse-result').style.display = 'none';
+      });
+      document.getElementById('ketto').addEventListener('input', calc);
+      document.getElementById('hanbyo').addEventListener('input', calc);
+      document.getElementById('total-input').addEventListener('input', calcReverse);
+    });
   </script>
 
 </body>
