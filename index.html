@@ -95,11 +95,73 @@
       font-family: inherit;
     }
     .btn-reset:active { background: #f2f2f7; }
+
+    /* 血統登録(1歳)スイッチ */
+    .switch-row {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      background: transparent;
+      padding: 4px 0;
+    }
+    .switch-track {
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    .switch-label {
+      font-size: 15px;
+      font-weight: 500;
+      color: #1c1c1e;
+    }
+    .switch-track {
+      width: 72px;
+      height: 31px;
+      border-radius: 16px;
+      background: #e5e5ea;
+      position: relative;
+      transition: background 0.2s;
+      flex-shrink: 0;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    .switch-track.on { background: #34c759; }
+    .switch-text {
+      position: absolute;
+      top: 50%;
+      right: 8px;
+      transform: translateY(-50%);
+      font-size: 12px;
+      font-weight: 600;
+      color: #8e8e93;
+      transition: right 0.2s, color 0.2s;
+      pointer-events: none;
+    }
+    .switch-track.on .switch-text {
+      right: auto;
+      left: 8px;
+      color: #fff;
+    }
+    .switch-thumb {
+      width: 27px;
+      height: 27px;
+      border-radius: 50%;
+      background: #fff;
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+      transition: left 0.2s;
+      pointer-events: none;
+    }
+    .switch-track.on .switch-thumb { left: 43px; }
+
     .section-title {
       font-size: 13px;
       font-weight: 600;
       color: #8e8e93;
-      text-transform: uppercase;
       letter-spacing: 0.05em;
       padding: 4px 4px 0;
     }
@@ -124,6 +186,7 @@
       -webkit-tap-highlight-color: transparent;
       touch-action: manipulation;
     }
+
     @media (prefers-color-scheme: dark) {
       body { background: #000; color: #fff; }
       .header { background: #1c1c1e; border-bottom-color: rgba(255,255,255,0.1); }
@@ -134,7 +197,11 @@
       .divider { background: rgba(255,255,255,0.1); }
       .combo-label { color: #fff; }
       .combo-row { border-bottom-color: rgba(255,255,255,0.08); }
-      #total-input { color: #fff; border-bottom-color: #3a3a3c; }
+      #total-input, #azukari-input { color: #fff; border-bottom-color: #3a3a3c; }
+      .switch-row { background: transparent; }
+      .total-value { color: #fff; }
+      .switch-label { color: #fff; }
+      .switch-track { background: #3a3a3c; }
     }
   </style>
 </head>
@@ -146,6 +213,15 @@
 
   <div class="content">
 
+    <!-- 血統登録(1歳)トグル -->
+    <div class="switch-row">
+      <div class="switch-track" id="switch-track">
+        <span class="switch-text" id="switch-text">1歳</span>
+        <div class="switch-thumb" id="switch-thumb"></div>
+      </div>
+    </div>
+
+    <!-- 血統登録 -->
     <div class="card">
       <p class="card-label">血統登録</p>
       <p class="card-price">18,800円 / 件</p>
@@ -156,6 +232,18 @@
       </div>
     </div>
 
+    <!-- 血統登録(1歳) -->
+    <div class="card" id="card-ichisai" style="display:none;">
+      <p class="card-label">血統登録（1歳）</p>
+      <p class="card-price">34,800円 / 件</p>
+      <div class="counter">
+        <button class="btn-counter" id="btn-ichisai-minus">−</button>
+        <input type="number" id="ichisai" value="" min="0" inputmode="numeric" />
+        <button class="btn-counter" id="btn-ichisai-plus">＋</button>
+      </div>
+    </div>
+
+    <!-- 繁殖登録 -->
     <div class="card">
       <p class="card-label">繁殖登録</p>
       <p class="card-price">17,100円 / 件</p>
@@ -166,10 +254,15 @@
       </div>
     </div>
 
+    <!-- 小計・合計 -->
     <div class="result-card">
       <div class="result-row">
         <span class="result-row-label">血統登録 小計</span>
         <span class="result-row-value" id="sub-ketto">0円</span>
+      </div>
+      <div class="result-row" id="row-ichisai" style="display:none;">
+        <span class="result-row-label">血統登録（1歳）小計</span>
+        <span class="result-row-value" id="sub-ichisai">0円</span>
       </div>
       <div class="result-row">
         <span class="result-row-label">繁殖登録 小計</span>
@@ -184,6 +277,36 @@
 
     <button class="btn-reset" id="btn-reset">リセット</button>
 
+    <!-- 受取額 -->
+    <div class="section-title">受取額・お釣り</div>
+
+    <div class="card">
+      <p class="card-label">受取額を入力</p>
+      <div style="display:flex; align-items:center; gap:8px; margin-top:12px;">
+        <input type="number" id="azukari-input" inputmode="numeric"
+          style="flex:1; min-width:0; font-size:22px; font-weight:600; border:none; border-bottom:1.5px solid #d1d1d6; background:transparent; color:#1c1c1e; outline:none; padding-bottom:4px; -webkit-appearance:none; appearance:none;" />
+        <span style="font-size:16px; color:#8e8e93; flex-shrink:0;">円</span>
+        <button class="clear-btn" id="btn-clear-azukari">×</button>
+      </div>
+    </div>
+
+    <div class="result-card" id="otsuri-result" style="display:none;">
+      <div class="result-row">
+        <span class="result-row-label">合計金額</span>
+        <span class="result-row-value" id="otsuri-total">0円</span>
+      </div>
+      <div class="result-row">
+        <span class="result-row-label">受取額</span>
+        <span class="result-row-value" id="otsuri-azukari">0円</span>
+      </div>
+      <div class="divider"></div>
+      <div class="total-row">
+        <span class="total-label" id="otsuri-label">お釣り</span>
+        <span class="total-value" id="otsuri-value">0円</span>
+      </div>
+    </div>
+
+    <!-- 逆算 -->
     <div class="section-title">合計金額から頭数を逆算</div>
 
     <div class="card">
@@ -206,12 +329,35 @@
   <script>
     function fmt(n) { return n.toLocaleString('ja-JP') + '円'; }
 
+    var ichisaiVisible = false;
+
     function calc() {
       var h = Math.max(0, parseInt(document.getElementById('hanbyo').value) || 0);
       var k = Math.max(0, parseInt(document.getElementById('ketto').value) || 0);
+      var i = ichisaiVisible ? Math.max(0, parseInt(document.getElementById('ichisai').value) || 0) : 0;
       document.getElementById('sub-hanbyo').textContent = fmt(h * 17100);
       document.getElementById('sub-ketto').textContent = fmt(k * 18800);
-      document.getElementById('total').textContent = fmt(h * 17100 + k * 18800);
+      document.getElementById('sub-ichisai').textContent = fmt(i * 34800);
+      document.getElementById('total').textContent = fmt(h * 17100 + k * 18800 + i * 34800);
+      calcOtsuri();
+    }
+
+    function calcOtsuri() {
+      var h = Math.max(0, parseInt(document.getElementById('hanbyo').value) || 0);
+      var k = Math.max(0, parseInt(document.getElementById('ketto').value) || 0);
+      var i = ichisaiVisible ? Math.max(0, parseInt(document.getElementById('ichisai').value) || 0) : 0;
+      var total = h * 17100 + k * 18800 + i * 34800;
+      var azukari = parseInt(document.getElementById('azukari-input').value) || 0;
+      var resultDiv = document.getElementById('otsuri-result');
+      if (azukari <= 0) { resultDiv.style.display = 'none'; return; }
+      resultDiv.style.display = 'block';
+      var diff = azukari - total;
+      document.getElementById('otsuri-total').textContent = fmt(total);
+      document.getElementById('otsuri-azukari').textContent = fmt(azukari);
+      document.getElementById('otsuri-label').textContent = diff >= 0 ? 'お釣り' : '不足金額';
+      var valEl = document.getElementById('otsuri-value');
+      valEl.textContent = fmt(Math.abs(diff));
+      valEl.style.color = diff < 0 ? '#ff3b30' : '#1c1c1e';
     }
 
     function changeVal(id, delta) {
@@ -225,6 +371,11 @@
       var resultDiv = document.getElementById('reverse-result');
       var listDiv = document.getElementById('reverse-list');
       if (total <= 0) { resultDiv.style.display = 'none'; return; }
+      if (total > 100000000) {
+        resultDiv.style.display = 'block';
+        listDiv.innerHTML = '<p class="no-result">金額が大きすぎます</p>';
+        return;
+      }
       var results = [];
       var maxK = Math.floor(total / 18800);
       for (var k = 0; k <= maxK; k++) {
@@ -232,6 +383,7 @@
         if (remain >= 0 && remain % 17100 === 0) {
           results.push({ k: k, h: remain / 17100 });
         }
+        if (results.length > 100) break;
       }
       resultDiv.style.display = 'block';
       if (results.length === 0) {
@@ -247,22 +399,509 @@
       }).join('');
     }
 
-    // イベント登録（onclickではなくaddEventListenerを使用）
     document.addEventListener('DOMContentLoaded', function() {
       document.getElementById('btn-ketto-minus').addEventListener('click', function() { changeVal('ketto', -1); });
       document.getElementById('btn-ketto-plus').addEventListener('click', function() { changeVal('ketto', 1); });
+      document.getElementById('btn-ichisai-minus').addEventListener('click', function() { changeVal('ichisai', -1); });
+      document.getElementById('btn-ichisai-plus').addEventListener('click', function() { changeVal('ichisai', 1); });
       document.getElementById('btn-hanbyo-minus').addEventListener('click', function() { changeVal('hanbyo', -1); });
       document.getElementById('btn-hanbyo-plus').addEventListener('click', function() { changeVal('hanbyo', 1); });
+
+      document.getElementById('switch-track').addEventListener('click', function() {
+        ichisaiVisible = !ichisaiVisible;
+        var card = document.getElementById('card-ichisai');
+        var row = document.getElementById('row-ichisai');
+        var track = document.getElementById('switch-track');
+        if (ichisaiVisible) {
+          card.style.display = 'block';
+          row.style.display = 'flex';
+          track.classList.add('on');
+        } else {
+          card.style.display = 'none';
+          row.style.display = 'none';
+          track.classList.remove('on');
+          document.getElementById('ichisai').value = '';
+        }
+        calc();
+      });
+
       document.getElementById('btn-reset').addEventListener('click', function() {
         document.getElementById('hanbyo').value = '';
         document.getElementById('ketto').value = '';
+        document.getElementById('ichisai').value = '';
+        document.getElementById('azukari-input').value = '';
+        document.getElementById('otsuri-result').style.display = 'none';
         calc();
       });
+
       document.getElementById('btn-clear-reverse').addEventListener('click', function() {
         document.getElementById('total-input').value = '';
         document.getElementById('reverse-result').style.display = 'none';
       });
+
+      document.getElementById('azukari-input').addEventListener('input', calcOtsuri);
+      document.getElementById('btn-clear-azukari').addEventListener('click', function() {
+        document.getElementById('azukari-input').value = '';
+        document.getElementById('otsuri-result').style.display = 'none';
+      });
+
       document.getElementById('ketto').addEventListener('input', calc);
+      document.getElementById('ichisai').addEventListener('input', calc);
+      document.getElementById('hanbyo').addEventListener('input', calc);
+      document.getElementById('total-input').addEventListener('input', calcReverse);
+    });
+  </script>
+
+</body>
+</html><!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="登録料計算" />
+  <title>登録料計算機</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kaku Gothic ProN", sans-serif;
+      background: #f2f2f7;
+      color: #1c1c1e;
+      min-height: 100vh;
+      padding: env(safe-area-inset-top, 20px) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
+    }
+    .header {
+      background: #fff;
+      border-bottom: 0.5px solid rgba(0,0,0,0.12);
+      padding: 16px 20px 12px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .header h1 { font-size: 17px; font-weight: 600; text-align: center; }
+    .content {
+      padding: 20px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+    .card { background: #fff; border-radius: 14px; padding: 16px; }
+    .card-label { font-size: 15px; font-weight: 600; color: #1c1c1e; margin-bottom: 2px; }
+    .card-price { font-size: 13px; color: #8e8e93; margin-bottom: 12px; }
+    .counter {
+      display: grid;
+      grid-template-columns: 44px 1fr 44px;
+      align-items: center;
+    }
+    .btn-counter {
+      width: 44px;
+      height: 44px;
+      border-radius: 22px;
+      border: none;
+      background: #f2f2f7;
+      color: #1c1c1e;
+      font-size: 22px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    .btn-counter:active { background: #d1d1d6; }
+    .counter input {
+      width: 100%;
+      min-width: 0;
+      text-align: center;
+      font-size: 26px;
+      font-weight: 600;
+      border: none;
+      background: transparent;
+      color: #1c1c1e;
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
+    .result-card { background: #fff; border-radius: 14px; padding: 16px; }
+    .result-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; }
+    .result-row-label { font-size: 14px; color: #8e8e93; }
+    .result-row-value { font-size: 15px; font-weight: 500; color: #1c1c1e; }
+    .divider { height: 0.5px; background: rgba(0,0,0,0.1); margin: 8px 0; }
+    .total-row { display: flex; justify-content: space-between; align-items: baseline; padding-top: 4px; }
+    .total-label { font-size: 16px; font-weight: 600; }
+    .total-value { font-size: 32px; font-weight: 700; letter-spacing: -0.5px; color: #1c1c1e; }
+    .btn-reset {
+      width: 100%;
+      height: 44px;
+      border-radius: 14px;
+      border: none;
+      background: #fff;
+      color: #ff3b30;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      font-family: inherit;
+    }
+    .btn-reset:active { background: #f2f2f7; }
+
+    /* 血統登録(1歳)スイッチ */
+    .switch-row {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      background: transparent;
+      padding: 4px 0;
+    }
+    .switch-track {
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    .switch-label {
+      font-size: 15px;
+      font-weight: 500;
+      color: #1c1c1e;
+    }
+    .switch-track {
+      width: 72px;
+      height: 31px;
+      border-radius: 16px;
+      background: #e5e5ea;
+      position: relative;
+      transition: background 0.2s;
+      flex-shrink: 0;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    .switch-track.on { background: #34c759; }
+    .switch-text {
+      position: absolute;
+      top: 50%;
+      right: 8px;
+      transform: translateY(-50%);
+      font-size: 12px;
+      font-weight: 600;
+      color: #8e8e93;
+      transition: right 0.2s, color 0.2s;
+      pointer-events: none;
+    }
+    .switch-track.on .switch-text {
+      right: auto;
+      left: 8px;
+      color: #fff;
+    }
+    .switch-thumb {
+      width: 27px;
+      height: 27px;
+      border-radius: 50%;
+      background: #fff;
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+      transition: left 0.2s;
+      pointer-events: none;
+    }
+    .switch-track.on .switch-thumb { left: 43px; }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #8e8e93;
+      letter-spacing: 0.05em;
+      padding: 4px 4px 0;
+    }
+    .combo-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 0.5px solid rgba(0,0,0,0.08);
+    }
+    .combo-row:last-child { border-bottom: none; }
+    .combo-label { font-size: 14px; color: #1c1c1e; }
+    .no-result { font-size: 14px; color: #8e8e93; text-align: center; padding: 8px 0; }
+    .clear-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #8e8e93;
+      font-size: 20px;
+      padding: 0 4px;
+      line-height: 1;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body { background: #000; color: #fff; }
+      .header { background: #1c1c1e; border-bottom-color: rgba(255,255,255,0.1); }
+      .card, .result-card, .btn-reset { background: #1c1c1e; }
+      .card-label, .total-label, .total-value, .result-row-value, .counter input { color: #fff; }
+      .btn-counter { background: #2c2c2e; color: #fff; }
+      .btn-counter:active { background: #3a3a3c; }
+      .divider { background: rgba(255,255,255,0.1); }
+      .combo-label { color: #fff; }
+      .combo-row { border-bottom-color: rgba(255,255,255,0.08); }
+      #total-input, #azukari-input { color: #fff; border-bottom-color: #3a3a3c; }
+      .switch-row { background: transparent; }
+      .total-value { color: #fff; }
+      .switch-label { color: #fff; }
+      .switch-track { background: #3a3a3c; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>登録料計算機</h1>
+  </div>
+
+  <div class="content">
+
+    <!-- 血統登録(1歳)トグル -->
+    <div class="switch-row">
+      <div class="switch-track" id="switch-track">
+        <span class="switch-text" id="switch-text">1歳</span>
+        <div class="switch-thumb" id="switch-thumb"></div>
+      </div>
+    </div>
+
+    <!-- 血統登録 -->
+    <div class="card">
+      <p class="card-label">血統登録</p>
+      <p class="card-price">18,800円 / 件</p>
+      <div class="counter">
+        <button class="btn-counter" id="btn-ketto-minus">−</button>
+        <input type="number" id="ketto" value="" min="0" inputmode="numeric" />
+        <button class="btn-counter" id="btn-ketto-plus">＋</button>
+      </div>
+    </div>
+
+    <!-- 血統登録(1歳) -->
+    <div class="card" id="card-ichisai" style="display:none;">
+      <p class="card-label">血統登録（1歳）</p>
+      <p class="card-price">34,800円 / 件</p>
+      <div class="counter">
+        <button class="btn-counter" id="btn-ichisai-minus">−</button>
+        <input type="number" id="ichisai" value="" min="0" inputmode="numeric" />
+        <button class="btn-counter" id="btn-ichisai-plus">＋</button>
+      </div>
+    </div>
+
+    <!-- 繁殖登録 -->
+    <div class="card">
+      <p class="card-label">繁殖登録</p>
+      <p class="card-price">17,100円 / 件</p>
+      <div class="counter">
+        <button class="btn-counter" id="btn-hanbyo-minus">−</button>
+        <input type="number" id="hanbyo" value="" min="0" inputmode="numeric" />
+        <button class="btn-counter" id="btn-hanbyo-plus">＋</button>
+      </div>
+    </div>
+
+    <!-- 小計・合計 -->
+    <div class="result-card">
+      <div class="result-row">
+        <span class="result-row-label">血統登録 小計</span>
+        <span class="result-row-value" id="sub-ketto">0円</span>
+      </div>
+      <div class="result-row" id="row-ichisai" style="display:none;">
+        <span class="result-row-label">血統登録（1歳）小計</span>
+        <span class="result-row-value" id="sub-ichisai">0円</span>
+      </div>
+      <div class="result-row">
+        <span class="result-row-label">繁殖登録 小計</span>
+        <span class="result-row-value" id="sub-hanbyo">0円</span>
+      </div>
+      <div class="divider"></div>
+      <div class="total-row">
+        <span class="total-label">合計</span>
+        <span class="total-value" id="total">0円</span>
+      </div>
+    </div>
+
+    <button class="btn-reset" id="btn-reset">リセット</button>
+
+    <!-- 受取額 -->
+    <div class="section-title">受取額・お釣り</div>
+
+    <div class="card">
+      <p class="card-label">受取額を入力</p>
+      <div style="display:flex; align-items:center; gap:8px; margin-top:12px;">
+        <input type="number" id="azukari-input" inputmode="numeric"
+          style="flex:1; min-width:0; font-size:22px; font-weight:600; border:none; border-bottom:1.5px solid #d1d1d6; background:transparent; color:#1c1c1e; outline:none; padding-bottom:4px; -webkit-appearance:none; appearance:none;" />
+        <span style="font-size:16px; color:#8e8e93; flex-shrink:0;">円</span>
+        <button class="clear-btn" id="btn-clear-azukari">×</button>
+      </div>
+    </div>
+
+    <div class="result-card" id="otsuri-result" style="display:none;">
+      <div class="result-row">
+        <span class="result-row-label">合計金額</span>
+        <span class="result-row-value" id="otsuri-total">0円</span>
+      </div>
+      <div class="result-row">
+        <span class="result-row-label">受取額</span>
+        <span class="result-row-value" id="otsuri-azukari">0円</span>
+      </div>
+      <div class="divider"></div>
+      <div class="total-row">
+        <span class="total-label" id="otsuri-label">お釣り</span>
+        <span class="total-value" id="otsuri-value">0円</span>
+      </div>
+    </div>
+
+    <!-- 逆算 -->
+    <div class="section-title">合計金額から頭数を逆算</div>
+
+    <div class="card">
+      <p class="card-label">合計金額を入力</p>
+      <div style="display:flex; align-items:center; gap:8px; margin-top:12px;">
+        <input type="number" id="total-input" inputmode="numeric"
+          style="flex:1; min-width:0; font-size:22px; font-weight:600; border:none; border-bottom:1.5px solid #d1d1d6; background:transparent; color:#1c1c1e; outline:none; padding-bottom:4px; -webkit-appearance:none; appearance:none;" />
+        <span style="font-size:16px; color:#8e8e93; flex-shrink:0;">円</span>
+        <button class="clear-btn" id="btn-clear-reverse">×</button>
+      </div>
+    </div>
+
+    <div class="result-card" id="reverse-result" style="display:none;">
+      <p class="card-label" style="margin-bottom:12px;">頭数の組み合わせ</p>
+      <div id="reverse-list"></div>
+    </div>
+
+  </div>
+
+  <script>
+    function fmt(n) { return n.toLocaleString('ja-JP') + '円'; }
+
+    var ichisaiVisible = false;
+
+    function calc() {
+      var h = Math.max(0, parseInt(document.getElementById('hanbyo').value) || 0);
+      var k = Math.max(0, parseInt(document.getElementById('ketto').value) || 0);
+      var i = ichisaiVisible ? Math.max(0, parseInt(document.getElementById('ichisai').value) || 0) : 0;
+      document.getElementById('sub-hanbyo').textContent = fmt(h * 17100);
+      document.getElementById('sub-ketto').textContent = fmt(k * 18800);
+      document.getElementById('sub-ichisai').textContent = fmt(i * 34800);
+      document.getElementById('total').textContent = fmt(h * 17100 + k * 18800 + i * 34800);
+      calcOtsuri();
+    }
+
+    function calcOtsuri() {
+      var h = Math.max(0, parseInt(document.getElementById('hanbyo').value) || 0);
+      var k = Math.max(0, parseInt(document.getElementById('ketto').value) || 0);
+      var i = ichisaiVisible ? Math.max(0, parseInt(document.getElementById('ichisai').value) || 0) : 0;
+      var total = h * 17100 + k * 18800 + i * 34800;
+      var azukari = parseInt(document.getElementById('azukari-input').value) || 0;
+      var resultDiv = document.getElementById('otsuri-result');
+      if (azukari <= 0) { resultDiv.style.display = 'none'; return; }
+      resultDiv.style.display = 'block';
+      var diff = azukari - total;
+      document.getElementById('otsuri-total').textContent = fmt(total);
+      document.getElementById('otsuri-azukari').textContent = fmt(azukari);
+      document.getElementById('otsuri-label').textContent = diff >= 0 ? 'お釣り' : '不足金額';
+      var valEl = document.getElementById('otsuri-value');
+      valEl.textContent = fmt(Math.abs(diff));
+      valEl.style.color = diff < 0 ? '#ff3b30' : '#1c1c1e';
+    }
+
+    function changeVal(id, delta) {
+      var el = document.getElementById(id);
+      el.value = Math.max(0, (parseInt(el.value) || 0) + delta);
+      calc();
+    }
+
+    function calcReverse() {
+      var total = parseInt(document.getElementById('total-input').value) || 0;
+      var resultDiv = document.getElementById('reverse-result');
+      var listDiv = document.getElementById('reverse-list');
+      if (total <= 0) { resultDiv.style.display = 'none'; return; }
+      if (total > 100000000) {
+        resultDiv.style.display = 'block';
+        listDiv.innerHTML = '<p class="no-result">金額が大きすぎます</p>';
+        return;
+      }
+      var results = [];
+      var maxK = Math.floor(total / 18800);
+      for (var k = 0; k <= maxK; k++) {
+        var remain = total - k * 18800;
+        if (remain >= 0 && remain % 17100 === 0) {
+          results.push({ k: k, h: remain / 17100 });
+        }
+        if (results.length > 100) break;
+      }
+      resultDiv.style.display = 'block';
+      if (results.length === 0) {
+        listDiv.innerHTML = '<p class="no-result">該当なし</p>';
+        return;
+      }
+      listDiv.innerHTML = results.map(function(r) {
+        var parts = [];
+        if (r.k > 0) parts.push('血統登録 ' + r.k + '頭');
+        if (r.h > 0) parts.push('繁殖登録 ' + r.h + '頭');
+        if (parts.length === 0) parts.push('0頭');
+        return '<div class="combo-row"><span class="combo-label">' + parts.join('　＋　') + '</span></div>';
+      }).join('');
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('btn-ketto-minus').addEventListener('click', function() { changeVal('ketto', -1); });
+      document.getElementById('btn-ketto-plus').addEventListener('click', function() { changeVal('ketto', 1); });
+      document.getElementById('btn-ichisai-minus').addEventListener('click', function() { changeVal('ichisai', -1); });
+      document.getElementById('btn-ichisai-plus').addEventListener('click', function() { changeVal('ichisai', 1); });
+      document.getElementById('btn-hanbyo-minus').addEventListener('click', function() { changeVal('hanbyo', -1); });
+      document.getElementById('btn-hanbyo-plus').addEventListener('click', function() { changeVal('hanbyo', 1); });
+
+      document.getElementById('switch-track').addEventListener('click', function() {
+        ichisaiVisible = !ichisaiVisible;
+        var card = document.getElementById('card-ichisai');
+        var row = document.getElementById('row-ichisai');
+        var track = document.getElementById('switch-track');
+        if (ichisaiVisible) {
+          card.style.display = 'block';
+          row.style.display = 'flex';
+          track.classList.add('on');
+        } else {
+          card.style.display = 'none';
+          row.style.display = 'none';
+          track.classList.remove('on');
+          document.getElementById('ichisai').value = '';
+        }
+        calc();
+      });
+
+      document.getElementById('btn-reset').addEventListener('click', function() {
+        document.getElementById('hanbyo').value = '';
+        document.getElementById('ketto').value = '';
+        document.getElementById('ichisai').value = '';
+        document.getElementById('azukari-input').value = '';
+        document.getElementById('otsuri-result').style.display = 'none';
+        calc();
+      });
+
+      document.getElementById('btn-clear-reverse').addEventListener('click', function() {
+        document.getElementById('total-input').value = '';
+        document.getElementById('reverse-result').style.display = 'none';
+      });
+
+      document.getElementById('azukari-input').addEventListener('input', calcOtsuri);
+      document.getElementById('btn-clear-azukari').addEventListener('click', function() {
+        document.getElementById('azukari-input').value = '';
+        document.getElementById('otsuri-result').style.display = 'none';
+      });
+
+      document.getElementById('ketto').addEventListener('input', calc);
+      document.getElementById('ichisai').addEventListener('input', calc);
       document.getElementById('hanbyo').addEventListener('input', calc);
       document.getElementById('total-input').addEventListener('input', calcReverse);
     });
